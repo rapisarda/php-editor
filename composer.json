@@ -1,0 +1,21 @@
+{
+    "name": "rapisarda/php-editor",
+    "version": "0.0.1",
+    "autoload": {
+        "psr-4": {
+            "PhpEditor\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^7.2",
+        "phpunit/phpunit": "^8.5"
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^5.2"
+    }
+}
