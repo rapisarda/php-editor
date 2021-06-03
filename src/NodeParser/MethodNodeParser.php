@@ -2,6 +2,7 @@
 
 namespace PhpEditor\NodeParser;
 
+use PhpEditor\Lexer;
 use PhpEditor\Node\MethodNode;
 
 class MethodNodeParser extends NodeParser
@@ -22,15 +23,8 @@ class MethodNodeParser extends NodeParser
         }
 
         $level = 1;
-        $indent = 1;
         $body = '';
 
-        $current = $this->lexer->next()->current();
-
-        if ($current->is(T_WHITESPACE)) {
-            $spaces = explode("\n", $current->getContent());
-            $indent = strlen(end($spaces));
-        }
 
         while ($level !== 0) {
             $current = $this->lexer->next()->current();
@@ -40,19 +34,10 @@ class MethodNodeParser extends NodeParser
                 $level || $nextContent = '';
             } elseif ($current->isAny(['{', T_CURLY_OPEN])) {
                 ++$level;
-            } elseif ($current->is(T_WHITESPACE)) {
-                $spaces = explode("\n", $current->getContent());
-                $count = count($spaces);
-                if ($count > 1) {
-                    $spacesNb = (strlen($spaces[$count-1]) - $indent);
-                    $spaces[$count-1] = str_repeat(' ', $spacesNb < 0 ? 0 : $spacesNb);
-                    $space = implode("\n", $spaces);
-                    $nextContent = $space;
-                }
             }
             $body .= $nextContent;
         }
-        $method->setBody(trim($body));
+        $method->setBody($body);
         $this->expect('}')->next();
 
         return $method;

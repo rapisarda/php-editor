@@ -10,9 +10,11 @@ class Parser
     /** @var NodeParser[] */
     private $nodeParsers = [];
     private $lexer;
+    private $filename;
 
     public function __construct($filename)
     {
+        $this->filename = $filename;
         $this->lexer = new Lexer(file_get_contents($filename));
     }
 
@@ -29,5 +31,13 @@ class Parser
         }
 
         return $this->nodeParsers[$nodeParser]->getNode();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFilename()
+    {
+        return $this->filename;
     }
 }

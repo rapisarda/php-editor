@@ -82,22 +82,23 @@ abstract class NodeParser
         return $this;
     }
 
-    /**
-     * @param $id
-     * @return $this
-     * @throws \Exception
-     */
     protected function expect($id)
     {
         if (!$this->token()->is($id)) {
-            throw new \Exception(sprintf('Expected %s got %s',
-                    is_int($id) ? token_name($id) : $id,
-                    $this->token()->getName())
-            );
+            throw new \Exception(sprintf(
+                'Error in file %s Expected %s got %s line %d near %s',
+                $this->parser->getFilename(),
+                is_int($id) ? token_name($id) : $id,
+                $this->token()->getName(),
+                $this->token()->getLine(),
+                $this->content()
+            ));
         }
 
         return $this;
     }
+
+
     protected function is($id)
     {
         return $this->token()->is($id);
@@ -197,9 +198,22 @@ abstract class NodeParser
         return $identifier;
     }
 
-    protected function parseError()
+    protected function parseError($expect = [])
     {
         debug_print_backtrace(0, 5);
-        throw new \ParseError(sprintf('Error near "%s" at line %d', $this->content(), $this->token()->getLine()));
+        $got = $this->name();
+        $content = $this->content();
+        $content .= $this->next([])->content();
+        $content .= $this->next([])->content();
+        $content .= $this->next([])->content();
+        $content .= $this->next([])->content();
+        throw new \ParseError(sprintf(
+            'Error in file %s near "%s" at line %d, expect "%s" got %s',
+            $this->parser->getFilename(),
+            $content,
+            $this->token()->getLine(),
+            implode('" ,"', $expect),
+            $got
+        ));
     }
 }

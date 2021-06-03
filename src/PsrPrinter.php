@@ -204,11 +204,9 @@ class PsrPrinter extends Visitor
         if ($node->isAbstract()) {
             $this->build .= ';';
         } else {
-            $this->build .= "\n$this->indentation{\n";
+            $this->build .= "\n$this->indentation{";
             $body = $node->getBody();
-            $indent = $this->indent().$this->indentation;
-            $this->build .= $indent.implode("\n{$indent}", explode("\n", $body));
-            $this->build .= "\n$this->indentation}\n";
+            $this->build .= "$body}\n";
         }
     }
 

@@ -62,7 +62,10 @@ class AnnotationNodeParser extends NodeParser
         $this->expect(Lexer::T_OPEN_CURLY_BRACES)->next();
         while (!$this->is(Lexer::T_CLOSE_CURLY_BRACES)) {
 
-            if ($data = $this->extract([Lexer::T_STRING, Lexer::T_COLON])) {
+            if (
+                ($data = $this->extract([Lexer::T_STRING, Lexer::T_COLON]))
+                || ($data = $this->extract([Lexer::T_STRING, Lexer::T_EQUALS]))
+            ) {
                 $key = $data[0];
             }
             $value = $this->valueAnnotation();

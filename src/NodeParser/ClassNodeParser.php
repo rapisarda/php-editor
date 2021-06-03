@@ -14,8 +14,11 @@ class ClassNodeParser extends NodeParser
         $this->next();
 
         if ($this->token()->is(T_EXTENDS)) {
-            $node->setExtends($this->next()->expect(T_STRING)->token()->getContent());
-            $this->next();
+            if (!$this->next()->isAny($expect = [T_NS_SEPARATOR, T_STRING])) {
+                $this->parseError($expect);
+            }
+            $node->setExtends($this->getFullName());
+//            $this->next();
         }
 
         if ($this->token()->is(T_IMPLEMENTS)) {
