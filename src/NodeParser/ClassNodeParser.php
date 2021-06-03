@@ -17,14 +17,14 @@ class ClassNodeParser extends NodeParser
             if (!$this->next()->isAny($expect = [T_NS_SEPARATOR, T_STRING])) {
                 $this->parseError($expect);
             }
-            $node->setExtends($this->getFullName());
-//            $this->next();
+            $node->setExtends($this->getContentWhile([T_NS_SEPARATOR, T_STRING], self::NONE_TOKENS));
         }
 
         if ($this->token()->is(T_IMPLEMENTS)) {
             $this->next();
+        dump($this->token(), $this->name());
             do {
-                $node->addImplement($this->getFullName());
+                $node->addImplement($this->getContentWhile([T_NS_SEPARATOR, T_STRING], self::NONE_TOKENS));
             } while ($this->token()->is(',') && $this->next());
         }
 
@@ -93,7 +93,7 @@ class ClassNodeParser extends NodeParser
                     break;
                 case T_USE:
                     $this->next();
-                    $node->addTrait($this->extractWhile(';'));
+                    $node->addTrait($this->getContentUntil(';'));
                     $this->next();
                     break;
                 default:

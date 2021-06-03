@@ -10,7 +10,7 @@ class ConstantNodeParser extends NodeParser
     {
         $node = new ConstantNode();
         $node->setName($this->next()->token()->getContent());
-        $node->setValue($this->next()->expect('=')->next()->extractWhile(';'));
+        $node->setValue($this->next()->expect('=')->next()->getContentUntil(';'));
         $this->next();
 
         return $node;

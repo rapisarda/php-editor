@@ -18,7 +18,7 @@ class DocBlockNodeParser extends NodeParser
                 case Lexer::T_NL:
                 case Lexer::T_WHITE_SPACE:
                 case Lexer::T_IDENTIFIER:
-                    $doc->addStatement($this->extractWhile(Lexer::T_NL));
+                    $doc->addStatement($this->getContentUntil(Lexer::T_NL));
                     $this->next([]);
                     break;
                 case Lexer::T_AT:
@@ -26,7 +26,7 @@ class DocBlockNodeParser extends NodeParser
                         $doc->addStatement($this->parse(AnnotationNodeParser::class));
                         $this->expect(Lexer::T_CLOSE_PARENTHESIS)->next([])->expect(Lexer::T_NL)->next([]);
                     } else {
-                        $doc->addStatement($this->extractWhile(Lexer::T_NL));
+                        $doc->addStatement($this->getContentUntil(Lexer::T_NL));
                         $this->next([]);
                     }
                     break;

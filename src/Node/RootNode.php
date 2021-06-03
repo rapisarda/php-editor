@@ -180,5 +180,4 @@ class RootNode extends AbstractDocumentableNode
     {
         $visitor->visitRoot($this);
     }
-
 }

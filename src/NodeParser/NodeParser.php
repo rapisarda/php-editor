@@ -8,6 +8,7 @@ use PhpEditor\Token;
 
 abstract class NodeParser
 {
+    protected const NONE_TOKENS = [T_WHITESPACE, Lexer::T_NONE, Lexer::T_WHITE_SPACE, Lexer::T_NL];
     /** @var Lexer */
     protected $lexer;
     /** @var Parser */
@@ -32,34 +33,37 @@ abstract class NodeParser
     }
 
     /**
-     * @param $endToken
+     * @param int|string|array<int|string> $endToken
+     * @param array<int|string> $ignore
      * @return string
      */
-    protected function extractWhile($endToken)
+    protected function getContentUntil($endToken, array $ignore = []): string
     {
         $endToken = is_array($endToken) ? $endToken : [$endToken];
         $val = '';
-        while ($this->lexer->valid() && !$this->lexer->current()->isAny($endToken)) {
-            $val .= $this->lexer->current()->getContent();
-            $this->lexer->next();
+        while ($this->lexer->valid() && !$this->isAny($endToken)) {
+            $val .= $this->content();
+            $this->next($ignore);
         }
 
         return $val;
     }
 
     /**
-     * @param $endToken
-     * @return array
+     * @param int|string|array<int|string> $token
+     * @param array<int|string> $ignore
+     * @return string
      */
-    protected function extractUntil($endToken)
+    protected function getContentWhile($token, array $ignore = []): string
     {
-        $extract = [];
-        while ($this->isAny($endToken)) {
-            $extract[] = $this->content();
-            $this->next([]);
+        $token = is_array($token) ? $token : [$token];
+        $val = '';
+        while ($this->lexer->valid() && $this->isAny($token)) {
+            $val .= $this->content();
+            $this->next($ignore);
         }
 
-        return $extract;
+        return $val;
     }
 
     /**
@@ -73,7 +77,7 @@ abstract class NodeParser
     /**
      * @return $this
      */
-    protected function next($ignore = [T_WHITESPACE, Lexer::T_NONE, Lexer::T_WHITE_SPACE, Lexer::T_NL])
+    protected function next($ignore = self::NONE_TOKENS)
     {
         $this->lexer->next();
         if ($this->lexer->valid() && $this->isAny($ignore)) {
@@ -82,9 +86,14 @@ abstract class NodeParser
         return $this;
     }
 
+    /**
+     * @param int|string $id
+     * @return $this
+     * @throws \Exception
+     */
     protected function expect($id)
     {
-        if (!$this->token()->is($id)) {
+        if (!$this->is($id)) {
             throw new \Exception(sprintf(
                 'Error in file %s Expected %s got %s line %d near %s',
                 $this->parser->getFilename(),
@@ -98,13 +107,19 @@ abstract class NodeParser
         return $this;
     }
 
-
+    /**
+     * @param int|string $id
+     * @return bool
+     */
     protected function is($id)
     {
         return $this->token()->is($id);
     }
 
-
+    /**
+     * @param array<int|string> $ids
+     * @return bool
+     */
     protected function isAny(array $ids)
     {
         return $this->token()->isAny($ids);
@@ -184,23 +199,8 @@ abstract class NodeParser
         return $this->token()->getType();
     }
 
-    /**
-     * @return string
-     */
-    protected function getFullName()
-    {
-        $identifier = '';
-        while ($this->token()->isAny([T_NS_SEPARATOR, T_STRING, T_ARRAY])) {
-            $identifier .= $this->token()->getContent();
-            $this->next();
-        }
-
-        return $identifier;
-    }
-
     protected function parseError($expect = [])
     {
-        debug_print_backtrace(0, 5);
         $got = $this->name();
         $content = $this->content();
         $content .= $this->next([])->content();

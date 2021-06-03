@@ -27,23 +27,23 @@ class RootNodeParser extends NodeParser
                     }
                     break;
                 case T_DECLARE:
-                    $node->setDeclare($this->next()->expect('(')->next()->extractWhile(')'));
+                    $node->setDeclare($this->next()->expect('(')->next()->getContentUntil(')'));
                     $this->next()->expect(';')->next();
                     break;
                 case T_NAMESPACE:
-                    $node->setNamespace($this->next()->extractWhile(';'));
+                    $node->setNamespace($this->next()->getContentUntil(';'));
                     $this->next();
                     break;
                 case T_USE:
                     switch($this->next()->token()->getType()) {
                         case T_FUNCTION:
-                            $node->addUseFunction($this->next()->extractWhile(';'));
+                            $node->addUseFunction($this->next()->getContentUntil(';'));
                             break;
                         case T_CONST:
-                            $node->addUseConstant($this->next()->extractWhile(';'));
+                            $node->addUseConstant($this->next()->getContentUntil(';'));
                             break;
                         case T_STRING:
-                            $node->addUse($this->extractWhile(';'));
+                            $node->addUse($this->getContentUntil(';'));
                             break;
                     }
                     $this->next();

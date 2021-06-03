@@ -12,14 +12,14 @@ class MethodNodeParser extends NodeParser
         $method = new MethodNode();
         $method->setName($this->token()->getContent());
         $this->next()->expect('(')->next();
-        $method->setParameters($this->extractWhile(')'));
+        $method->setParameters($this->getContentUntil(')'));
 
         if ($this->next()->token()->is(':')) {
             if ($this->next()->token()->is('?')) {
                 $method->setNullable(true);
                 $this->next();
             }
-            $method->setReturnType($this->getFullName());
+            $method->setReturnType($this->getContentWhile([T_NS_SEPARATOR, T_STRING, T_ARRAY], self::NONE_TOKENS));
         }
 
         $level = 1;

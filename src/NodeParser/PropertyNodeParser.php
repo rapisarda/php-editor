@@ -11,7 +11,7 @@ class PropertyNodeParser extends NodeParser
         $propertyNode = new PropertyNode();
         $propertyNode->setName($this->token()->getContent());
         if ($this->next()->token()->is('=')) {
-            $propertyNode->setValue($this->next()->extractWhile(';'));
+            $propertyNode->setValue($this->next()->getContentUntil(';'));
         }
         $this->expect(';')->next();
 
