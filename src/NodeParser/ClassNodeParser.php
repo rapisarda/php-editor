@@ -22,7 +22,6 @@ class ClassNodeParser extends NodeParser
 
         if ($this->token()->is(T_IMPLEMENTS)) {
             $this->next();
-        dump($this->token(), $this->name());
             do {
                 $node->addImplement($this->getContentWhile([T_NS_SEPARATOR, T_STRING], self::NONE_TOKENS));
             } while ($this->token()->is(',') && $this->next());

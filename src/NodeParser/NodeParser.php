@@ -4,6 +4,7 @@ namespace PhpEditor\NodeParser;
 
 use PhpEditor\Lexer;
 use PhpEditor\Parser;
+use PhpEditor\ParserCollection;
 use PhpEditor\Token;
 
 abstract class NodeParser
@@ -17,9 +18,9 @@ abstract class NodeParser
     /**
      * NodeParser constructor.
      * @param Lexer $lexer
-     * @param Parser $parser
+     * @param ParserCollection $parser
      */
-    public function __construct(Lexer $lexer, Parser $parser)
+    public function __construct(Lexer $lexer, ParserCollection $parser)
     {
         $this->lexer = $lexer;
         $this->parser = $parser;
@@ -29,7 +30,7 @@ abstract class NodeParser
 
     public function parse(string $parser)
     {
-        return $this->parser->parse($parser);
+        return $this->parser->get($parser)->getNode();
     }
 
     /**
@@ -95,8 +96,7 @@ abstract class NodeParser
     {
         if (!$this->is($id)) {
             throw new \Exception(sprintf(
-                'Error in file %s Expected %s got %s line %d near %s',
-                $this->parser->getFilename(),
+                'Expected %s got %s line %d near %s',
                 is_int($id) ? token_name($id) : $id,
                 $this->token()->getName(),
                 $this->token()->getLine(),
@@ -208,8 +208,7 @@ abstract class NodeParser
         $content .= $this->next([])->content();
         $content .= $this->next([])->content();
         throw new \ParseError(sprintf(
-            'Error in file %s near "%s" at line %d, expect "%s" got %s',
-            $this->parser->getFilename(),
+            'Error near "%s" at line %d, expect "%s" got %s',
             $content,
             $this->token()->getLine(),
             implode('" ,"', $expect),

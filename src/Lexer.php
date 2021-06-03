@@ -95,7 +95,7 @@ class Lexer implements \SeekableIterator
      */
     private function scan(string $source): void
     {
-        foreach (token_get_all($source, 1) as $phpToken) {
+        foreach (token_get_all($source) as $phpToken) {
             if (is_array($phpToken) && T_DOC_COMMENT === $phpToken[0]) {
                 $line = $phpToken[2];
                 foreach ($this->scanDoc($phpToken[1]) as $docToken) {

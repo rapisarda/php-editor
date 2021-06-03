@@ -2,42 +2,52 @@
 
 namespace PhpEditor;
 
-use PhpEditor\NodeParser\NodeParser;
+use PhpEditor\NodeParser\AnnotationNodeParser;
+use PhpEditor\NodeParser\ArgumentNodeParser;
+use PhpEditor\NodeParser\ClassNodeParser;
+use PhpEditor\NodeParser\ConstantNodeParser;
+use PhpEditor\NodeParser\DocBlockNodeParser;
+use PhpEditor\NodeParser\MethodNodeParser;
+use PhpEditor\NodeParser\PropertyNodeParser;
 use PhpEditor\NodeParser\RootNodeParser;
 
 class Parser
 {
-    /** @var NodeParser[] */
-    private $nodeParsers = [];
-    private $lexer;
+    /** @var ParserCollection */
+    private $nodeParsers;
     private $filename;
 
     public function __construct($filename)
     {
+        $this->nodeParsers = new ParserCollection();
+        $lexer = new Lexer(file_get_contents($filename));
         $this->filename = $filename;
-        $this->lexer = new Lexer(file_get_contents($filename));
-    }
 
-    public function getAst()
-    {
-        return $this->parse(RootNodeParser::class);
-    }
+        $parsers = [
+            AnnotationNodeParser::class,
+            ArgumentNodeParser::class,
+            ClassNodeParser::class,
+            ConstantNodeParser::class,
+            MethodNodeParser::class,
+            DocBlockNodeParser::class,
+            PropertyNodeParser::class,
+            RootNodeParser::class,
+        ];
 
-    public function parse(string $nodeParser)
-    {
-        if (!isset($this->nodeParsers[$nodeParser])) {
-            $this->nodeParsers[$nodeParser] = new $nodeParser($this->lexer, $this);
-            assert($this->nodeParsers[$nodeParser] instanceof NodeParser);
+        foreach ($parsers as $parser) {
+            $this->nodeParsers->add($parser, new $parser($lexer, $this->nodeParsers));
         }
-
-        return $this->nodeParsers[$nodeParser]->getNode();
     }
 
     /**
-     * @return mixed
+     * @throws \Exception
      */
-    public function getFilename()
+    public function getAst()
     {
-        return $this->filename;
+        try {
+            return $this->nodeParsers->get(RootNodeParser::class)->getNode();
+        } catch (\Throwable $t) {
+            throw new \Exception(sprintf('Error while parsing file %s: %s', $this->filename, $t->getMessage()));
+        }
     }
 }
