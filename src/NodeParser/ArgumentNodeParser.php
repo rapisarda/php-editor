@@ -55,7 +55,7 @@ class ArgumentNodeParser extends NodeParser
                     return $value;
             }
             $value .= $this->content();
-            $this->next([]);
+            $this->next($level > 0 ? [] : self::NONE_TOKENS);
         }
     }
 }

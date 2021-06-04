@@ -21,6 +21,7 @@ use const Vendor\Package\{ConstantA, ConstantB, ConstantC};
  */
 class MockClassExact extends Bar implements FooInterface
 {
+    use salutTrait;
     const FOOD = 'FOO';
 
     /**
@@ -54,6 +55,14 @@ class MockClassExact extends Bar implements FooInterface
         } else {
             BazClass::bar($arg2, $arg3);
         }
+    }
+
+    private function awesomeLongMethod(
+        WithVery $long = 'parameters',
+        AndOther $var = 'someVars',
+        AndOther $iable = 'll'
+    ): yo {
+        //some body
     }
 
     final public static function bar()

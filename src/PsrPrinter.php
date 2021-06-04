@@ -13,6 +13,7 @@ use PhpEditor\Node\RootNode;
 
 class PsrPrinter extends Visitor
 {
+    private const MAX_LENGTH = 120;
     /**
      * @var string|null
      */
@@ -27,6 +28,9 @@ class PsrPrinter extends Visitor
      * @var int
      */
     private $level = 0;
+
+    private $col = 0;
+    private $line = 0;
 
     /**
      * @param RootNode $node
@@ -108,9 +112,8 @@ class PsrPrinter extends Visitor
         $this->build .= "\n{\n";
         $this->level++;
 
-        $first = true;
         foreach ($node->getTraits() as $trait) {
-            $this->build .= $this->indent().'use '.$trait.';';
+            $this->build .= "{$this->indent()}use {$trait};\n";
         }
 
         $first = true;
@@ -188,8 +191,10 @@ class PsrPrinter extends Visitor
     public function visitMethod(MethodNode $node): void
     {
         $this->visitDocumentable($node);
-        $args = implode(', ', array_map([$this, 'visiteParameters'], $node->getArguments()));
-        $this->build .=
+        $argsArray = array_map([$this, 'visitParameters'], $node->getArguments());
+        $argsPart = implode(', ', $argsArray);
+        $argsPart = "({$argsPart})";
+        $build =
             $this->indentation
             .($node->isFinal() ? 'final ' : '')
             .$node->getVisibility().' '
@@ -197,23 +202,34 @@ class PsrPrinter extends Visitor
             .($node->isAbstract() ? 'abstract ' : '')
             .'function '
             .$node->getName()
-            ."({$args})"
         ;
 
         if ($type = $node->getReturnType()) {
-            $this->build .= ': '.($node->isNullable() ? '?' : '').$type;
+            $type   = ': '.($node->isNullable() ? '?' : '').$type;
         }
+        $type = $type ?? '';
+        $rowLength = mb_strlen($build) + mb_strlen($argsPart) + mb_strlen($type);
+        $indented = false;
+        if ($rowLength > self::MAX_LENGTH) {
+            $this->level++;
+            $argsPart = "(\n{$this->indent()}".implode(",\n{$this->indent()}", $argsArray);
+            $this->level--;
+            $argsPart .= "\n{$this->indent()})";
+            $indented = true;
+        }
+        $build .= $argsPart.$type;
 
         if ($node->isAbstract()) {
-            $this->build .= ';';
+            $build .= ';';
         } else {
-            $this->build .= "\n$this->indentation{";
-            $body = $node->getBody();
-            $this->build .= "$body}\n";
+            $build .= $indented ? " {" : "\n$this->indentation{";
+            $build .= "{$node->getBody()}}\n";
         }
+
+        $this->build .= $build;
     }
 
-    public function visiteParameters(ArgumentNode $node)
+    public function visitParameters(ArgumentNode $node): string
     {
         $build = $node->isNullable() ? '?' : '';
         if ($type =  $node->getType()) {
@@ -281,5 +297,13 @@ class PsrPrinter extends Visitor
     private function indent()
     {
         return str_repeat($this->indentation, $this->level);
+    }
+
+    public function add(string $build = ''): void
+    {
+        $lines = explode(PHP_EOL, $build);
+        $this->line += count($lines);
+        $line = end($lines);
+        $this->col = mb_strlen($line);
     }
 }
