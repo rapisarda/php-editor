@@ -186,9 +186,7 @@ abstract class NodeParser
         $this->save();
         $this->lexer->seek($this->lexer->key() - $nbBefore);
         for ($i = 0; $i < $tokensNb; $i++) {
-            echo '"'.$this->name().'"';
-            echo " => '{$this->content()}'";
-            echo "\n";
+            echo "\"{$this->name()}\" => \"{$this->content()}\"\n";
             $this->next([]);
         }
         $this->restor();
