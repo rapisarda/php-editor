@@ -36,6 +36,9 @@ class MethodNode extends AbstractDocumentableNode implements VisibilityAwareInte
      */
     private $parameters;
 
+    /** @var ArgumentNode[] */
+    private $arguments = [];
+
     /**
      * @var string|null
      */
@@ -139,6 +142,21 @@ class MethodNode extends AbstractDocumentableNode implements VisibilityAwareInte
     {
         $this->parameters = $parameters;
         return $this;
+    }
+
+    /**
+     * @param ArgumentNode $arg
+     * @return $this\
+     */
+    public function addArgument(ArgumentNode $arg): MethodNode
+    {
+        $this->arguments[$arg->getName()] = $arg;
+        return $this;
+    }
+
+    public function getArguments(): array
+    {
+        return $this->arguments;
     }
 
     /**

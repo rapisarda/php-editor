@@ -6,12 +6,25 @@ use PhpEditor\AbstractNode;
 
 class ArgumentNode extends AbstractNode
 {
+    /** @var bool */
+    private $nullable = false;
     /** @var null|string */
     private $type;
     /** @var string */
     private $name;
     /** @var null|string */
     private $default;
+
+    public function isNullable(): bool
+    {
+        return $this->nullable;
+    }
+
+    public function setIsNullable(bool $nullable): ArgumentNode
+    {
+        $this->nullable = $nullable;
+        return $this;
+    }
 
     /**
      * @return string|null

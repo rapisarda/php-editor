@@ -12,7 +12,12 @@ class MethodNodeParser extends NodeParser
         $method = new MethodNode();
         $method->setName($this->token()->getContent());
         $this->next()->expect('(')->next();
-        $method->setParameters($this->getContentUntil(')'));
+        while (!$this->is(')')) {
+            $method->addArgument($this->parse(ArgumentNodeParser::class));
+            if ($this->is(',')) {
+                $this->next();
+            }
+        }
 
         if ($this->next()->token()->is(':')) {
             if ($this->next()->token()->is('?')) {

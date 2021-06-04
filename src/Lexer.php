@@ -95,16 +95,23 @@ class Lexer implements \SeekableIterator
      */
     private function scan(string $source): void
     {
+        $line = 1;
         foreach (token_get_all($source) as $phpToken) {
-            if (is_array($phpToken) && T_DOC_COMMENT === $phpToken[0]) {
+            if (is_array($phpToken)) {
                 $line = $phpToken[2];
-                foreach ($this->scanDoc($phpToken[1]) as $docToken) {
-                    if ($nbLine = substr_count($docToken[1], "\n")) {
-                        $line += $nbLine;
+                if (T_DOC_COMMENT === $phpToken[0]) {
+
+                    foreach ($this->scanDoc($phpToken[1]) as $docToken) {
+                        if ($nbLine = substr_count($docToken[1], "\n")) {
+                            $line += $nbLine;
+                        }
+                        $this->tokens[] = new Token([$docToken[0], $docToken[1], $line]);
                     }
-                    $this->tokens[] = new Token([$docToken[0], $docToken[1], $line]);
+                    continue;
                 }
-                continue;
+            } else {
+                $phpToken = [$phpToken, $phpToken, $line];
+
             }
             $this->tokens[] = new Token($phpToken);
         }

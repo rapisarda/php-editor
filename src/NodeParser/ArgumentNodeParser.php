@@ -14,11 +14,12 @@ class ArgumentNodeParser extends NodeParser
     public function getNode()
     {
         $node = new ArgumentNode();
+        if ($this->is('?')) {
+            $node->setIsNullable(true);
+            $this->next();
+        }
         if ($this->isAny([T_STRING, T_ARRAY, T_NS_SEPARATOR])) {
             $node->setType($this->getContentUntil([T_VARIABLE], self::NONE_TOKENS));
-//            $node->setType($this->content());
-//            $this->next();
-//            dd($this->content());
         }
 
         $this->expect(T_VARIABLE);
@@ -30,11 +31,10 @@ class ArgumentNodeParser extends NodeParser
             $node->setDefault($this->rawValue());
         }
 
-//        die;
         return $node;
     }
 
-    protected function rawValue($tto = 'fdfs')
+    protected function rawValue()
     {
         $level = 0;
         $value = '';

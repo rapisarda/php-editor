@@ -4,6 +4,7 @@ namespace PhpEditor;
 
 use PhpEditor\Node\AbstractDocumentableNode;
 use PhpEditor\Node\AnnotationNode;
+use PhpEditor\Node\ArgumentNode;
 use PhpEditor\Node\ClassLikeNode;
 use PhpEditor\Node\ConstantNode;
 use PhpEditor\Node\MethodNode;
@@ -187,6 +188,7 @@ class PsrPrinter extends Visitor
     public function visitMethod(MethodNode $node): void
     {
         $this->visitDocumentable($node);
+        $args = implode(', ', array_map([$this, 'visiteParameters'], $node->getArguments()));
         $this->build .=
             $this->indentation
             .($node->isFinal() ? 'final ' : '')
@@ -195,8 +197,9 @@ class PsrPrinter extends Visitor
             .($node->isAbstract() ? 'abstract ' : '')
             .'function '
             .$node->getName()
-            ."({$node->getParameters()})"
+            ."({$args})"
         ;
+
         if ($type = $node->getReturnType()) {
             $this->build .= ': '.($node->isNullable() ? '?' : '').$type;
         }
@@ -208,6 +211,19 @@ class PsrPrinter extends Visitor
             $body = $node->getBody();
             $this->build .= "$body}\n";
         }
+    }
+
+    public function visiteParameters(ArgumentNode $node)
+    {
+        $build = $node->isNullable() ? '?' : '';
+        if ($type =  $node->getType()) {
+            $build .= $type.' ';
+        }
+        $build .= $node->getName();
+        if ($default = $node->getDefault()) {
+            $build .= " = $default";
+        }
+        return $build;
     }
 
     /**
@@ -258,8 +274,6 @@ class PsrPrinter extends Visitor
 
         throw new \ParseError();
     }
-
-
 
     /**
      * @return string

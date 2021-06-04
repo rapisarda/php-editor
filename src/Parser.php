@@ -47,7 +47,7 @@ class Parser
         try {
             return $this->nodeParsers->get(RootNodeParser::class)->getNode();
         } catch (\Throwable $t) {
-            throw new \Exception(sprintf('Error while parsing file %s: %s', $this->filename, $t->getMessage()));
+            throw new \Exception(sprintf('Error while parsing file %s: %s', $this->filename, $t->getMessage()), $t->getCode(), $t);
         }
     }
 }
