@@ -2,7 +2,6 @@
 
 namespace PhpEditor\NodeParser;
 
-use PhpEditor\Lexer;
 use PhpEditor\Node\ArgumentNode;
 
 class ArgumentNodeParser extends NodeParser
