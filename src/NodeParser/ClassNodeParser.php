@@ -35,7 +35,7 @@ class ClassNodeParser extends NodeParser
             $isAbstract = false;
             $visibility = null;
             $isStatic = false;
-            if ($this->token()->is(Lexer::T_OPEN_BLOC)) {
+            if ($this->token()->is(Lexer::T_OPEN_DOC)) {
                 $doc = $this->next()->parse(DocBlockNodeParser::class);
                 $this->next();
             }

@@ -14,6 +14,7 @@ use PhpEditor\Node\RootNode;
 class PsrPrinter extends Visitor
 {
     private const MAX_LENGTH = 120;
+
     /**
      * @var string|null
      */
@@ -38,6 +39,7 @@ class PsrPrinter extends Visitor
      */
     public function dump(RootNode $node)
     {
+        $this->level = 0;
         $node->accept($this);
         $this->build = implode("\n", array_map(static function ($toto) {
             return rtrim($toto);
@@ -111,19 +113,26 @@ class PsrPrinter extends Visitor
         }
         $this->build .= "\n{\n";
         $this->level++;
+        $hasSomething = false;
 
         foreach ($node->getTraits() as $trait) {
             $this->build .= "{$this->indent()}use {$trait};\n";
+            $hasSomething = true;
+        }
+
+        if ($hasSomething && $node->hasConstants()) {
+            $this->build .= "\n";
         }
 
         $first = true;
         foreach ($node->getConstants() as $const) {
-            $first || $const->hasDocComment() && $this->build .= "\n";
+            $first || ($const->hasDocComment() && $this->build .= "\n");
             $const->accept($this);
             $first = false;
+            $hasSomething = true;
         }
 
-        if ($node->hasProperties() && $node->hasConstants()) {
+        if ($hasSomething && $node->hasProperties()) {
             $this->build .= "\n";
         }
 
@@ -132,9 +141,10 @@ class PsrPrinter extends Visitor
             $first || ($prop->hasDocComment() && $this->build .= "\n");
             $prop->accept($this);
             $first = false;
+            $hasSomething = true;
         }
 
-        if ($node->hasProperties() && $node->hasMethods()) {
+        if ($hasSomething && $node->hasMethods()) {
             $this->build .= "\n";
         }
 

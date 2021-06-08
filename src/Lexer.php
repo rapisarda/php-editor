@@ -25,8 +25,8 @@ class Lexer implements \SeekableIterator
     public const T_NULL                = 111000;
     public const T_COLON               = 112000;
     public const T_MINUS               = 113000;
-    public const T_OPEN_BLOC           = 114000;
-    public const T_CLOSE_BLOC          = 115000;
+    public const T_OPEN_DOC            = 114000;
+    public const T_CLOSE_DOC           = 115000;
     public const T_WHITE_SPACE         = 116000;
     public const T_VAR                 = 117000;
     public const T_DOT                 = 118000;
@@ -43,8 +43,8 @@ class Lexer implements \SeekableIterator
         ':'  => self::T_COLON,
         '-'  => self::T_MINUS,
         '\\' => self::T_NAMESPACE_SEPARATOR,
-        '/**'=> self::T_OPEN_BLOC,
-        '*/' => self::T_CLOSE_BLOC,
+        '/**'=> self::T_OPEN_DOC,
+        '*/' => self::T_CLOSE_DOC,
         ' '  => self::T_WHITE_SPACE,
         '.'  => self::T_DOT,
     ];
@@ -101,7 +101,6 @@ class Lexer implements \SeekableIterator
             if (is_array($phpToken)) {
                 $line = $phpToken[2];
                 if (T_DOC_COMMENT === $phpToken[0]) {
-
                     foreach ($this->scanDoc($phpToken[1]) as $docToken) {
                         if ($nbLine = substr_count($docToken[1], "\n")) {
                             $line += $nbLine;

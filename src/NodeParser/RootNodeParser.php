@@ -1,16 +1,13 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace PhpEditor\NodeParser;
-
 
 use PhpEditor\Lexer;
 use PhpEditor\Node\RootNode;
 
 class RootNodeParser extends NodeParser
 {
-    
-    public function getNode()
+    public function getNode(): RootNode
     {
         $node = new RootNode();
         $abstract = false;
@@ -49,7 +46,9 @@ class RootNodeParser extends NodeParser
                     $this->next();
                     break;
                 case T_COMMENT:
-                case Lexer::T_OPEN_BLOC:
+                    $this->next();
+                    break;
+                case Lexer::T_OPEN_DOC:
                     $this->next();
                     $doc = $this->parse(DocBlockNodeParser::class);
                     $this->next();
@@ -92,5 +91,4 @@ class RootNodeParser extends NodeParser
         }
         return $node;
     }
-
 }

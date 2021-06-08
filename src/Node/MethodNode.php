@@ -160,6 +160,15 @@ class MethodNode extends AbstractDocumentableNode implements VisibilityAwareInte
     }
 
     /**
+     * @param string $name
+     * @return ArgumentNode
+     */
+    public function getArgument(string $name): ArgumentNode
+    {
+        return $this->arguments[$name];
+    }
+
+    /**
      * @return string|null
      */
     public function getReturnType(): ?string

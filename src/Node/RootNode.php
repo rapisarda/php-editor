@@ -1,41 +1,22 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace PhpEditor\Node;
-
 
 use PhpEditor\Visitor;
 
 class RootNode extends AbstractDocumentableNode
 {
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $declare;
-
-    /**
-     * @var string|null
-     */
+    /** @var string|null */
     private $namespace;
-
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $uses = [];
-
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $useFunctions = [];
-
-    /**
-     * @var string[]
-     */
+    /** @var string[] */
     private $useConstants = [];
-
-    /**
-     * @var ClassLikeNode
-     */
+    /** @var ClassLikeNode */
     private $classLike;
 
     /**

@@ -10,8 +10,7 @@ class DocBlockNodeParser extends NodeParser
     public function getNode()
     {
         $doc = new DocBlockNode();
-        $currentStatement = '';
-        while (!$this->is(Lexer::T_CLOSE_BLOC)) {
+        while (!$this->is(Lexer::T_CLOSE_DOC)) {
             $current = $this->token();
             switch ($current->getType()) {
                 case Lexer::T_NONE:
@@ -36,9 +35,7 @@ class DocBlockNodeParser extends NodeParser
                     $this->debug();
                     die;
             }
-//            dump($doc);
         }
         return $doc;
     }
-
 }

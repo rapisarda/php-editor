@@ -2,6 +2,7 @@
 
 namespace PhpEditor;
 
+use PhpEditor\Node\RootNode;
 use PhpEditor\NodeParser\AnnotationNodeParser;
 use PhpEditor\NodeParser\ArgumentNodeParser;
 use PhpEditor\NodeParser\ClassNodeParser;
@@ -42,7 +43,7 @@ class Parser
     /**
      * @throws \Exception
      */
-    public function getAst()
+    public function getAst(): RootNode
     {
         try {
             return $this->nodeParsers->get(RootNodeParser::class)->getNode();
