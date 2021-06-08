@@ -32,7 +32,9 @@ class DocBlockNode
         }
 
         $this->statements[] = $statement;
+        return $this;
     }
+
     public function getAnnotationNode(string $name): ?AnnotationNode 
     {
         foreach ($this->statements as $stmt) {
