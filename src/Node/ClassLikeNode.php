@@ -250,11 +250,11 @@ class ClassLikeNode extends AbstractDocumentableNode
 
     /**
      * @param string $name
-     * @return MethodNode
+     * @return null|MethodNode
      */
-    public function getMethod(string $name)
+    public function getMethod(string $name): ?MethodNode
     {
-        return $this->methods[$name];
+        return $this->methods[$name] ?? null;
     }
 
     /**
