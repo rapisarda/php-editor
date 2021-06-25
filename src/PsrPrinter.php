@@ -7,6 +7,7 @@ use PhpEditor\Node\AnnotationNode;
 use PhpEditor\Node\ArgumentNode;
 use PhpEditor\Node\ClassLikeNode;
 use PhpEditor\Node\ConstantNode;
+use PhpEditor\Node\DocNode;
 use PhpEditor\Node\MethodNode;
 use PhpEditor\Node\PropertyNode;
 use PhpEditor\Node\RootNode;
@@ -207,9 +208,9 @@ class PsrPrinter extends Visitor
         $build =
             $this->indentation
             .($node->isFinal() ? 'final ' : '')
-            .$node->getVisibility().' '
-            .($node->isStatic() ? 'static ' : '')
             .($node->isAbstract() ? 'abstract ' : '')
+            .($node->getVisibility() ? $node->getVisibility().' ' : '')
+            .($node->isStatic() ? 'static ' : '')
             .'function '
             .$node->getName()
         ;
@@ -230,7 +231,7 @@ class PsrPrinter extends Visitor
         $build .= $argsPart.$type;
 
         if ($node->isAbstract()) {
-            $build .= ';';
+            $build .= ";\n";
         } else {
             $build .= $indented ? " {" : "\n$this->indentation{";
             $build .= "{$node->getBody()}}\n";
@@ -263,12 +264,23 @@ class PsrPrinter extends Visitor
                 if ($stmt instanceof AnnotationNode) {
                     $stmts[$k] = $this->dumpAnnotation($stmt);
                 }
+                if ($stmt instanceof DocNode) {
+                    $stmts[$k] = $this->dumpDoc($stmt);
+                }
             }
             $indent = $this->indent();
             $this->build .= "{$indent}/**\n{$indent} * ".implode("\n{$indent} * ", $stmts)."\n{$indent} */\n";
             return true;
         }
         return false;
+    }
+
+    public function dumpDoc(DocNode $node)
+    {
+        return '@'.$node->getName()
+            .($node->getType() ? " {$node->getType()}" : '')
+            .($node->getVar() ? " {$node->getVar()}" : '')
+            .($node->getComment() ? " {$node->getComment()}" : '');
     }
 
     private function dumpAnnotation($node)

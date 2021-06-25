@@ -8,6 +8,7 @@ use PhpEditor\NodeParser\ArgumentNodeParser;
 use PhpEditor\NodeParser\ClassNodeParser;
 use PhpEditor\NodeParser\ConstantNodeParser;
 use PhpEditor\NodeParser\DocBlockNodeParser;
+use PhpEditor\NodeParser\DocNodeParser;
 use PhpEditor\NodeParser\MethodNodeParser;
 use PhpEditor\NodeParser\PropertyNodeParser;
 use PhpEditor\NodeParser\RootNodeParser;
@@ -31,6 +32,7 @@ class Parser
             ConstantNodeParser::class,
             MethodNodeParser::class,
             DocBlockNodeParser::class,
+            DocNodeParser::class,
             PropertyNodeParser::class,
             RootNodeParser::class,
         ];

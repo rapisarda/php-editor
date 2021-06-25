@@ -16,7 +16,7 @@ class RootNode extends AbstractDocumentableNode
     private $useFunctions = [];
     /** @var string[] */
     private $useConstants = [];
-    /** @var ClassLikeNode */
+    /** @var null|ClassLikeNode */
     private $classLike;
 
     /**
@@ -140,9 +140,9 @@ class RootNode extends AbstractDocumentableNode
     }
 
     /**
-     * @return ClassLikeNode
+     * @return null|ClassLikeNode
      */
-    public function getClassLike(): ClassLikeNode
+    public function getClassLike(): ?ClassLikeNode
     {
         return $this->classLike;
     }

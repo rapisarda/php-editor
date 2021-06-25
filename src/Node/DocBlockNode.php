@@ -7,7 +7,7 @@ class DocBlockNode
     private $statements = [];
 
     /**
-     * @return array
+     * @return array<string|DocNode|AnnotationNode>
      */
     public function getStatements(): array
     {
@@ -27,7 +27,7 @@ class DocBlockNode
      */
     public function addStatement($statement)
     {
-        if (!($statement instanceof AnnotationNode || is_string($statement))) {
+        if (!($statement instanceof AnnotationNode || $statement instanceof DocNode|| is_string($statement))) {
             throw new \InvalidArgumentException();
         }
 
@@ -39,6 +39,16 @@ class DocBlockNode
     {
         foreach ($this->statements as $stmt) {
             if ($stmt instanceof AnnotationNode && $stmt->getName() === $name) {
+                return $stmt;
+            }
+        }
+        return null;
+    }
+
+    public function getDocNode(string $name): ?DocNode
+    {
+        foreach ($this->statements as $stmt) {
+            if ($stmt instanceof DocNode && $stmt->getName() === $name) {
                 return $stmt;
             }
         }

@@ -26,7 +26,7 @@ class MockClassExact extends Bar implements FooInterface
     const FOOD = 'FOO';
 
     /**
-     * const FOO
+     * const FOO|Bar[]
      */
     const FOO = 'FOO';
     const FOO_FOO = 'FOO';
@@ -43,10 +43,15 @@ class MockClassExact extends Bar implements FooInterface
     protected $fooBar = 0;
 
     /**
-     * @var string
+     * @var string|string[]
      */
     private $bazFoo = self::FOO;
 
+    /**
+     * @param int $a
+     * @param int|null $b
+     * @return array
+     */
     public function sampleFunction(int $a, ?int $b = null): array
     {
         if ($a === $b) {
@@ -66,8 +71,14 @@ class MockClassExact extends Bar implements FooInterface
         //some body
     }
 
+    /**
+     * Return version avec contrat sans numero externe
+     * @return Version
+     */
     final public static function bar()
     {
         // method body
     }
+
+    abstract function hiThere();
 }

@@ -14,9 +14,11 @@ class DocBlockNodeParser extends NodeParser
             $current = $this->token();
             switch ($current->getType()) {
                 case Lexer::T_NONE:
+                case Lexer::T_STRING:
                 case Lexer::T_NL:
                 case Lexer::T_WHITE_SPACE:
                 case Lexer::T_IDENTIFIER:
+                case Lexer::T_OPEN_CURLY_BRACES:
                     $doc->addStatement($this->getContentUntil(Lexer::T_NL));
                     $this->next([]);
                     break;
@@ -25,15 +27,14 @@ class DocBlockNodeParser extends NodeParser
                         $doc->addStatement($this->parse(AnnotationNodeParser::class));
                         $this->expect(Lexer::T_CLOSE_PARENTHESIS)->next([])->expect(Lexer::T_NL)->next([]);
                     } else {
-                        $doc->addStatement($this->getContentUntil(Lexer::T_NL));
-                        $this->next([]);
+                        $doc->addStatement($this->parse(DocNodeParser::class));
+                        if (!$this->is(Lexer::T_CLOSE_DOC)) {
+                            $this->next([]);
+                        }
                     }
                     break;
                 default:
-                    $this->dump(10);
-                    dump(token_name($this->type()));
-                    $this->debug();
-                    die;
+                    $this->parseError();
             }
         }
         return $doc;

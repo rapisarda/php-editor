@@ -199,6 +199,7 @@ abstract class NodeParser
 
     protected function parseError($expect = [])
     {
+        $class = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2)[1]['class'];
         $got = $this->name();
         $content = $this->content();
         $content .= $this->next([])->content();
@@ -206,7 +207,8 @@ abstract class NodeParser
         $content .= $this->next([])->content();
         $content .= $this->next([])->content();
         throw new \ParseError(sprintf(
-            'Error near "%s" at line %d, expect "%s" got %s',
+            '%s Error near "%s" at line %d, expect "%s" got %s',
+            $class,
             $content,
             $this->token()->getLine(),
             implode('" ,"', $expect),

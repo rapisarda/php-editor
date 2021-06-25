@@ -27,9 +27,16 @@ class MethodNodeParser extends NodeParser
             $method->setReturnType($this->getContentWhile([T_NS_SEPARATOR, T_STRING, T_ARRAY], self::NONE_TOKENS));
         }
 
+        if ($this->is(';')) {
+            $method->setAbstract(true);
+            $this->next();
+            return $method;
+        }
+
+        $this->expect('{');
+
         $level = 1;
         $body = '';
-
 
         while ($level !== 0) {
             $current = $this->lexer->next()->current();

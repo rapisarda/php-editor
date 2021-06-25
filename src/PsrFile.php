@@ -23,7 +23,6 @@ class PsrFile
     {
         $this->filename = $filename;
         $this->printer = new PsrPrinter();
-        $this->node = is_file($filename) ? (new Parser($filename))->getAst() : new RootNode();
     }
 
     public static function from(string $filename): self
@@ -33,6 +32,9 @@ class PsrFile
 
     public function node(): RootNode
     {
+        if (null === $this->node) {
+            $this->node = is_file($this->filename) ? (new Parser($this->filename))->getAst() : new RootNode();
+        }
         return $this->node;
     }
 
@@ -63,5 +65,10 @@ class PsrFile
             }
         }
         file_put_contents($filename ?? $this->filename, $this->printer->dump($this->node));
+    }
+
+    public function getFilename(): string
+    {
+        return $this->filename;
     }
 }
