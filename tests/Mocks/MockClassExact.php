@@ -22,6 +22,7 @@ use const Vendor\Package\{ConstantA, ConstantB, ConstantC};
 class MockClassExact extends Bar implements FooInterface
 {
     use salutTrait;
+
     const FOOD = 'FOO';
 
     /**
